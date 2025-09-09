@@ -1,0 +1,30 @@
+stages:
+- stage: PrepareFiles
+  jobs:
+    - job: Prep_Host1
+      pool:
+        name: 'Host1Pool'
+      steps:
+        - script: ./prepare_files.sh --output ./output/host1
+        - publish: ./output/host1
+          artifact: host1_files
+
+    - job: Prep_Host2
+      pool:
+        name: 'Host2Pool'
+      steps:
+        - script: ./prepare_files.sh --output ./output/host2
+        - publish: ./output/host2
+          artifact: host2_files
+
+    # Repeat for Host3, Host4, Host5
+
+- stage: ProcessFiles
+  dependsOn: PrepareFiles
+  jobs:
+    - job: Process
+      pool:
+        name: 'ProcessingHostPool'
+      steps:
+        - download: current
+        - script: ./process_files.sh --inputs $(Pipeline.Workspace)
