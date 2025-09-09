@@ -58,6 +58,21 @@ If you want to view the created index manifest:
 oras manifest fetch --oci-layout ./test/process-output:v1.0.0 --pretty
 ```
 
+## 5. Publish the multi-platform artifact (optional)
+
+Use `publish.sh` to copy all tags present in a local OCI layout directory to a remote repository. Before running, choose (or create) a remote repository reference you have permissions to push to (e.g. `ghcr.io/your-org/your-repo`).
+
+```bash
+# Example: publish the layouts produced in steps 2 and 3
+REPO=jinzha1.azurecr.io/test/distro-package
+source ./publish.sh
+publish ./test/process-output "$REPO"
+```
+
+Notes:
+
+* Ensure you're authenticated
+
 ## Cleanup
 
 ```bash
