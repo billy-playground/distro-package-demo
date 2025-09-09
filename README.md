@@ -7,6 +7,37 @@ This repository contains helper functions to:
 
 Below are quick test instructions to exercise the workflow locally.
 
+## Workflow
+
+```mermaid
+flowchart TD
+  subgraph Build Phase
+   direction LR
+   subgraph Agent1
+    A1["Prepare distro package"] --> A2["Craft platform-specific artifact"]
+   end
+   subgraph Agent2
+    B1["Prepare distro package"] --> B2["Craft platform-specific artifact"]
+   end
+   subgraph Agent3
+    C1["Prepare distro package"] --> C2["Craft platform-specific artifact"]
+   end
+   
+   subgraph AgentBuilder
+    D1["Craft multi-platform index"]
+   end
+   A2 --> D1
+   B2 --> D1
+   C2 --> D1
+  end
+
+  subgraph Publish Phase
+   Z1["Publish multi-platform artifact"]
+  end
+
+  D1 --> Z1
+```
+
 ## Prerequisites
 
 * Bash (recommended 4+)
