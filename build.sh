@@ -1,61 +1,50 @@
 #!/usr/bin/env bash
 ## Craft a platform specific image
 # Arguments:
-#   $1 - distribution_root (root folder of the a repository archives distribution)
-#   $2 - layout_root (destination root for OCI image layout)
+#   $1 - platform (e.g. linux/amd64, linux/arm64)
+#   $2 - distribution_root (root folder containing repository artifacts: rpm, deb, metadata, etc.)
+#   $3 - layout_root (destination root for OCI image layout; MUST be an absolute path to avoid ambiguity and ensure oras places blobs where expected)
 
 # Source helpers
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 . "${SCRIPT_DIR}/helpers.sh"
 
-craft_platform_specific() {
-	local distribution_root="$1"; local layout_root="$2"
-
-	# Ensure oras CLI is available
-	ensure_oras || return 1
-
-	# Ensure packages root is valid
-	if [ -z "$distribution_root" ]; then
-		echo "Error: distribution_root directory argument missing" >&2
-		return 1
-	fi
-	if [ ! -d "$distribution_root" ]; then
-		echo "Error: distribution_root directory does not exist: $distribution_root" >&2
-		return 1
-	fi
-
-	# load metadata files
+_craft_platform_specific_inner() {
+	# Args: $1 platform, $2 layout_root
+	local platform="$1"; local layout_root="$2"
+	# Collect ALL regular files relative to current directory (distribution_root)
 	local files=()
-	if [ -f "$distribution_root/Packages" ]; then
-		files+=("$distribution_root/Packages")
-	elif [ -f "$distribution_root/Packages.gz" ]; then
-		files+=("$distribution_root/Packages.gz")
-	else
-		echo "Error: Neither Packages nor Packages.gz found in distribution_root: $distribution_root" >&2
+	while IFS= read -r -d '' f; do
+		files+=("$f")
+	done < <(find . -type f -print0 2>/dev/null)
+	if [ ${#files[@]} -eq 0 ]; then
+		echo "Error: No files found in distribution_root: $(pwd)" >&2
 		return 1
 	fi
-
-	# load .deb files
-	while IFS= read -r -d '' deb; do
-		files+=("$deb")
-	done < <(find "$distribution_root" -maxdepth 1 -type f -name '*.deb' -print0 2>/dev/null)
-
-	local deb_count=0
-	while IFS= read -r -d '' deb; do
-		deb_count=$((deb_count + 1))
-	done < <(find "$distribution_root" -maxdepth 1 -type f -name '*.deb' -print0 2>/dev/null)
-	if [ $deb_count -eq 0 ]; then
-		echo "Error: No .deb files found in distribution_root: $distribution_root" >&2
-		return 1
-	fi
-
-	# pack into OCI image layout
 	local digest
-	if ! digest=$(oras push --oci-layout "$layout_root" "${files[@]}" --format go-template='{{.digest}}' 2> >(tee /dev/stderr)); then
+	# add debug output for next line
+	if ! digest=$(oras push --artifact-platform "$platform" --oci-layout "$layout_root" "${files[@]}" --format go-template='{{.digest}}' 2> >(tee /dev/stderr)); then
 		echo "Error: oras push failed" >&2
 		return 1
 	fi
-	echo "${digest}" > ${layout_root}/digest
+	echo "${digest}" > "${layout_root}/digest"
+}
+
+craft_platform_specific() {
+	local platform="$1"; local distribution_root="$2"; local layout_root="$3"
+	# NOTE: layout_root should be an absolute path. Relative paths can cause oras to resolve layout state wrongly.
+
+	ensure_oras || return 1
+	if [ -z "$platform" ]; then echo "Error: platform argument missing" >&2; return 1; fi
+	if [ -z "$distribution_root" ]; then echo "Error: distribution_root directory argument missing" >&2; return 1; fi
+	if [ ! -d "$distribution_root" ]; then echo "Error: distribution_root directory does not exist: $distribution_root" >&2; return 1; fi
+
+	# Enter directory, run inner logic, always popd
+	pushd "$distribution_root" >/dev/null 2>&1 || { echo "Error: cannot enter distribution_root: $distribution_root" >&2; return 1; }
+	_craft_platform_specific_inner "$platform" "$layout_root"
+	local rc=$?
+	popd >/dev/null 2>&1 || true
+	return $rc
 }
 
 ## Craft a multi platform index
@@ -124,4 +113,3 @@ craft_multi_platform_index() {
 		return 1
 	fi
 }
-

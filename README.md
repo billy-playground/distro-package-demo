@@ -27,7 +27,8 @@ This writes an OCI layout plus a `digest` file into `./test/prepare-output/linux
 
 ```bash
 source ./build.sh
-craft_platform_specific ./testdata/debian/archives ./test/prepare-output/linux_amd64_ubuntu22.04
+# NOTE: layout_root must be an absolute path; using $(pwd)/ ensures this.
+craft_platform_specific "linux/amd64:ubuntu 22.04" ./testdata/debian/archives $(pwd)/test/prepare-output/linux_amd64_ubuntu22.04
 ```
 
 Expected result:

@@ -21,11 +21,14 @@ stages:
         name: 'GenericPool'  # Apply tags in the matrix to specific agent with wanted platform
       steps:
         - script: |
+            # prepare distribution folder
+            # $DISTRIBUTION_ROOT: prepared distribution folder for the platform
+            # $PLATFORM: target platform (linux/amd64:ubuntu 24.04, etc)
             set -euo pipefail
             out_dir=./output/$(System.JobName)
             mkdir -p "$out_dir"
             source ./build.sh
-            craft_platform_specific "$DISTRIBUTION_ROOT" "$out_dir"
+            craft_platform_specific "$DISTRIBUTION_ROOT" "$(pwd)/$out_dir"
             echo "Generated digest file: $out_dir/digest" >&2
           name: captureDigest
         - publish: ./output/$(System.JobName)
