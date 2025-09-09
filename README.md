@@ -96,7 +96,7 @@ Use `publish.sh` to copy all tags present in a local OCI layout directory to a r
 
 ```bash
 # Example: publish the layouts produced in steps 2 and 3
-REPO=jinzha1.azurecr.io/test/distro-package
+REPO=jinzha1.azurecr.io/test/distro-package # replace with your target repo
 source ./publish.sh
 publish ./test/process-output "$REPO"
 ```
