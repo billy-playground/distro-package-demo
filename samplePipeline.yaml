@@ -24,6 +24,7 @@ stages:
             set -euo pipefail
             out_dir=./output/$(System.JobName)
             mkdir -p "$out_dir"
+            source ./build.sh
             craft_platform_specific "$DISTRIBUTION_ROOT" "$out_dir"
             echo "Generated digest file: $out_dir/digest" >&2
           name: captureDigest
@@ -42,6 +43,7 @@ stages:
             set -euo pipefail
             out_dir=./output/$(System.JobName)
             mkdir -p "$out_dir"
+            source ./build.sh
             craft_multi_platform_index "$(Pipeline.Workspace)" "$out_dir" "$VERSION"
           name: createIndex
         - publish: ./output/$(System.JobName)

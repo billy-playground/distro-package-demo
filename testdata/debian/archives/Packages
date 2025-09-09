@@ -1,0 +1,118 @@
+Package: gcc-14-base
+Source: gcc-14
+Version: 14.2.0-4ubuntu2~24.04
+Architecture: amd64
+Maintainer: Ubuntu Core developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Installed-Size: 112
+Breaks: gnat (<< 7)
+Filename: ./gcc-14-base_14.2.0-4ubuntu2~24.04_amd64.deb
+Size: 50826
+MD5sum: 6665855eaf43593250756e76e93b27f6
+SHA1: 56e70a64ff00cba4af5cb7a357966524930eef67
+SHA256: 81d02f705535faac0330bbceb07952ca790f9bf24bc9f19e651c35d543f4c598
+Section: libs
+Priority: optional
+Multi-Arch: same
+Homepage: http://gcc.gnu.org/
+Description: GCC, the GNU Compiler Collection (base package)
+ This package contains files common to all languages and libraries
+ contained in the GNU Compiler Collection (GCC).
+Original-Maintainer: Debian GCC Maintainers <debian-gcc@lists.debian.org>
+
+Package: kubectl
+Version: 1.34.0-ubuntu24.04u1
+Architecture: amd64
+Maintainer: Azure Container Upstream
+Installed-Size: 180371
+Depends: libc6 (>= 2.34), libssl3
+Conflicts: kubernetes, kubernetes-client
+Filename: ./kubectl_1.34.0-ubuntu24.04u1_amd64.deb
+Size: 35191456
+MD5sum: ab1ecf8dae3c2f64b13457c7cbcb83f2
+SHA1: 88899b62c9c1d9320850e937d694acc86952bd3e
+SHA256: 4d365bc0b9442c1131ee08f48627bfa3419a3a2d6a55d5d1f2a75e3d6818ee2e
+Section: -
+Homepage: https://github.com/kubernetes/kubernetes
+Description: Command-line utility for interacting with a Kubernetes cluster
+
+Package: libc6
+Source: glibc
+Version: 2.39-0ubuntu8.5
+Architecture: amd64
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Installed-Size: 13431
+Depends: libgcc-s1
+Recommends: libidn2-0 (>= 2.0.5~)
+Suggests: glibc-doc, debconf | debconf-2.0, locales, libnss-nis, libnss-nisplus
+Breaks: chrony (<< 4.2-3~), cyrus-imapd (<< 3.6.1-2ubuntu1), fakechroot (<< 2.19-3.5), firefox (<< 91~), firefox-esr (<< 91~), gnumach-image-1.8-486 (<< 2:1.8+git20210923~), gnumach-image-1.8-486-dbg (<< 2:1.8+git20210923~), gnumach-image-1.8-xen-486 (<< 2:1.8+git20210923~), gnumach-image-1.8-xen-486-dbg (<< 2:1.8+git20210923~), hurd (<< 1:0.9.git20220301-2), locales (<< 2.39), locales-all (<< 2.39), nscd (<< 2.39), python3-iptables (<< 1.0.0-2), scipy (<< 1.10.1-10build1), tinydns (<< 1:1.05-14), valgrind (<< 1:3.19.0-1~)
+Replaces: libc6-amd64
+Filename: ./libc6_2.39-0ubuntu8.5_amd64.deb
+Size: 3264550
+MD5sum: 3141f97acf06a15dce889456f173b112
+SHA1: 502be8ac5d346fc7565fec7f68318a145e6f3e6b
+SHA256: e8b8262e75b32eb8ca6f79a2cbde83c5d18c32973aee03748222cecc50ce11d7
+Section: libs
+Priority: optional
+Multi-Arch: same
+Homepage: https://www.gnu.org/software/libc/libc.html
+Description: GNU C Library: Shared libraries
+ Contains the standard libraries that are used by nearly all programs on
+ the system. This package includes shared versions of the standard C library
+ and the standard math library, as well as many others.
+Original-Maintainer: GNU Libc Maintainers <debian-glibc@lists.debian.org>
+Original-Vcs-Browser: https://salsa.debian.org/glibc-team/glibc
+Original-Vcs-Git: https://salsa.debian.org/glibc-team/glibc.git
+
+Package: libgcc-s1
+Source: gcc-14
+Version: 14.2.0-4ubuntu2~24.04
+Architecture: amd64
+Protected: yes
+Maintainer: Ubuntu Core developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Installed-Size: 197
+Depends: gcc-14-base (= 14.2.0-4ubuntu2~24.04), libc6 (>= 2.35)
+Replaces: libgcc1 (<< 1:10)
+Provides: libgcc1 (= 1:14.2.0-4ubuntu2~24.04)
+Filename: ./libgcc-s1_14.2.0-4ubuntu2~24.04_amd64.deb
+Size: 78552
+MD5sum: c4d12b5178ebe24379f16d59eb70b38a
+SHA1: 9417e68483d4676cd806a4436d56ab942cc525a6
+SHA256: 569fda5c9419b14ff5fa03ea7fba36e2bd0e54c62c4e7fd6b4a917e38c422a8d
+Section: libs
+Priority: optional
+Multi-Arch: same
+Homepage: http://gcc.gnu.org/
+Description: GCC support library
+ Shared version of the support library, a library of internal subroutines
+ that GCC uses to overcome shortcomings of particular machines, or
+ special needs for some languages.
+Important: yes
+Original-Maintainer: Debian GCC Maintainers <debian-gcc@lists.debian.org>
+
+Package: libssl3t64
+Source: openssl
+Version: 3.0.13-0ubuntu3.5
+Architecture: amd64
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Installed-Size: 6608
+Depends: libc6 (>= 2.38)
+Breaks: libssl3 (<< 3.0.13-0ubuntu3.5)
+Replaces: libssl3
+Provides: libssl3 (= 3.0.13-0ubuntu3.5)
+Filename: ./libssl3t64_3.0.13-0ubuntu3.5_amd64.deb
+Size: 1940112
+MD5sum: fa332705584a53f5e95fa6b91ed6c2e1
+SHA1: 3062b4278ef20e3c65dce5386756d172df2ceb47
+SHA256: 31df0a4d957c404c01b1898a84beca1190fd71cf2d2ac47ce5036705a24d96fc
+Section: libs
+Priority: optional
+Multi-Arch: same
+Homepage: https://www.openssl.org/
+Description: Secure Sockets Layer toolkit - shared libraries
+ This package is part of the OpenSSL project's implementation of the SSL
+ and TLS cryptographic protocols for secure communication over the
+ Internet.
+ .
+ It provides the libssl and libcrypto shared libraries.
+Original-Maintainer: Debian OpenSSL Team <pkg-openssl-devel@alioth-lists.debian.net>
+

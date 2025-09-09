@@ -51,11 +51,11 @@ craft_platform_specific() {
 
 	# pack into OCI image layout
 	local digest
-	if ! digest=$(oras push --oci-layout "$layout_root" "${files[@]}" --format go-template '{{.digest}}' 2> >(tee /dev/stderr)); then
+	if ! digest=$(oras push --oci-layout "$layout_root" "${files[@]}" --format go-template='{{.digest}}' 2> >(tee /dev/stderr)); then
 		echo "Error: oras push failed" >&2
 		return 1
 	fi
-	echo "${layout_root}@${digest}" > digest
+	echo "${digest}" > ${layout_root}/digest
 }
 
 ## Craft a multi platform index
@@ -72,12 +72,12 @@ craft_platform_specific() {
 #   - oras CLI must be available (checked via ensure_oras).
 # Arguments:
 #   $1 - prepare_root  : Root directory containing per-platform subdirectories (each with a 'digest' file).
-#   $2 - local_layout  : Destination OCI layout directory to assemble the index (created if missing).
+#   $2 - output_layout_root  : Destination OCI layout directory to assemble the index (created if missing).
 #   $3 - version       : Tag applied to the created index inside local_layout.
 # Output:
 #   (Currently no explicit echo of the created reference; update implementation if external callers expect it.)
 craft_multi_platform_index() {
-	local prepare_root="$1"; local local_layout="$2"; local version="$3"
+	local prepare_root="$1"; local output_layout_root="$2"; local version="$3"
 
 	# validate arguments
 	ensure_oras || return 1
@@ -107,7 +107,7 @@ craft_multi_platform_index() {
 		local digest
 		digest="$(<"$digest_file")"
 		# Copy manifest into aggregate local layout
-		if ! oras cp --from-oci-layout "${prepare_root}/${layout_root}@${digest}" --to-oci-layout "${local_layout}" 2> >(tee /dev/stderr); then
+		if ! oras cp --from-oci-layout "${layout_root}@${digest}" --to-oci-layout "${output_layout_root}" 2> >(tee /dev/stderr); then
 			echo "Error: oras cp failed for $layout_root@$digest" >&2
 			return 1
 		fi
@@ -119,7 +119,7 @@ craft_multi_platform_index() {
 	fi
 
 	# Create multi-platform index
-	if ! oras manifest index create --oci-layout "${local_layout}:${version}" "${digests[@]}" 2> >(tee /dev/stderr); then
+	if ! oras manifest index create --oci-layout "${output_layout_root}:${version}" "${digests[@]}" 2> >(tee /dev/stderr); then
 		echo "Error: failed to create manifest index" >&2
 		return 1
 	fi
