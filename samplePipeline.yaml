@@ -1,30 +1,48 @@
 stages:
-- stage: PrepareFiles
+- stage: PrepareArtifacts
   jobs:
-    - job: Prep_Host1
+    - job: Prep
+      # Add/modify platforms by editing the matrix entries below.
+      strategy:
+        matrix:
+          linux_amd64_ubuntu2204:
+            PLATFORM: linux/amd64
+            DISTRO: ubuntu
+            VER: '22.04'
+          linux_amd64_ubuntu2404:
+            PLATFORM: linux/amd64
+            DISTRO: ubuntu
+            VER: '24.04'
+          linux_arm64_ubuntu2404:
+            PLATFORM: linux/arm64
+            DISTRO: ubuntu
+            VER: '24.04'
       pool:
-        name: 'Host1Pool'
+        name: 'GenericPool'  # Apply tags in the matrix to specific agent with wanted platform
       steps:
-        - script: ./prepare_files.sh --output ./output/host1
-        - publish: ./output/host1
-          artifact: host1_files
+        - script: |
+            set -euo pipefail
+            out_dir=./output/$(System.JobName)
+            mkdir -p "$out_dir"
+            craft_platform_specific "$DISTRIBUTION_ROOT" "$out_dir"
+            echo "Generated digest file: $out_dir/digest" >&2
+          name: captureDigest
+        - publish: ./output/$(System.JobName)
+          artifact: $(System.JobName)
 
-    - job: Prep_Host2
-      pool:
-        name: 'Host2Pool'
-      steps:
-        - script: ./prepare_files.sh --output ./output/host2
-        - publish: ./output/host2
-          artifact: host2_files
-
-    # Repeat for Host3, Host4, Host5
-
-- stage: ProcessFiles
-  dependsOn: PrepareFiles
+- stage: ProcessArtifacts
+  dependsOn: PrepareArtifacts
   jobs:
     - job: Process
       pool:
         name: 'ProcessingHostPool'
       steps:
         - download: current
-        - script: ./process_files.sh --inputs $(Pipeline.Workspace)
+        - script: |
+            set -euo pipefail
+            out_dir=./output/$(System.JobName)
+            mkdir -p "$out_dir"
+            craft_multi_platform_index "$(Pipeline.Workspace)" "$out_dir" "$VERSION"
+          name: createIndex
+        - publish: ./output/$(System.JobName)
+          artifact: $(System.JobName)
